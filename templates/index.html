@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Data Entry</title>
+</head>
+<body>
+    <form method="post" action="{% url 'index' %}">
+        {% csrf_token %}
+        <label for="enrollment_number">Enter Enrollment Number:</label>
+        <input type="text" id="enrollment_number" name="enrollment_number">
+        <button type="submit">Search</button>
+    </form>
+    
+    {% if entry_details %}
+    <h2>Entry Details:</h2>
+    {% for key, value in entry_details.items %}
+    <p>{{ key }}: {{ value }}</p>
+    {% endfor %}
+    <button id="save">Save</button>
+     <!-- <a href="{% url 'index' %}" id="reset">Reset</a> Use an anchor tag for reset -->
+    <button id="resetButton">Reset</button>
+    <p id="save-message" style="display: none; color: green;">Entry saved successfully</p>
+    {% endif %}
+
+    {% if not_found %}
+    <p>No entry available for the provided enrollment number.</p>
+    {% endif %}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#save").click(function () {
+                $.get("{% url 'save_entry' %}", function (data) {
+                    if ('message' in data) {
+                        $("#save-message").show();
+                    } else if ('error' in data) {
+                        alert(data.error);
+                    }
+                });
+            });
+            document.getElementById("resetButton").addEventListener("click", function() {
+                window.location.href = "{% url 'index' %}";
+            });
+            
+        });
+    </script>
+</body>
+</html>
